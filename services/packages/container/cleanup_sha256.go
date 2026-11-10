@@ -104,7 +104,7 @@ func cleanupSHA256(outerCtx context.Context, olderThan time.Duration) error {
 			log.Debug("There are no container images with a version matching sha256:*")
 		}
 		log.Info("Nothing to cleanup")
-		return nil
+		return committer.Commit()
 	}
 
 	found := len(shaToPackageVersion)
