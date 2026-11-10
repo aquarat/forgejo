@@ -113,3 +113,21 @@ func TestCleanupSHA256(t *testing.T) {
 		cleanupAndCheckLogs(t, ancient, "Nothing to cleanup")
 	})
 }
+
+func TestCleanupExpiredBlobUploads(t *testing.T) {
+	require.NoError(t, unittest.PrepareTestDatabase())
+
+	ctx := db.DefaultContext
+
+	pbu, err := packages.CreateBlobUpload(ctx)
+	require.NoError(t, err)
+	pbu.UpdatedUnix = timeutil.TimeStamp(time.Now().Add(-2 * time.Hour).Unix())
+	_, err = db.GetEngine(ctx).ID(pbu.ID).Cols("updated_unix").NoAutoTime().Update(pbu)
+	require.NoError(t, err)
+
+	// There are no sha256:* versions to clean up, which must not undo the
+	// removal of the expired blob upload.
+	require.NoError(t, CleanupExpiredData(ctx, time.Hour))
+
+	unittest.AssertNotExistsBean(t, &packages.PackageBlobUpload{ID: pbu.ID})
+}
