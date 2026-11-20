@@ -8,7 +8,7 @@ name: build-image
 on:
   push:
     branches:
-      - v17.0.2-cleanup-fix
+      - v17.0.2-cleanupfix-tokencli
   workflow_dispatch:
 
 permissions:
@@ -17,7 +17,7 @@ permissions:
 env:
   IMAGE: ghcr.io/${{ github.repository_owner }}/forgejo
   # Bump the suffix for every rebuild with a changed patch set.
-  PATCH_VERSION: 17.0.2-cleanupfix.1
+  PATCH_VERSION: 17.0.2-cleanupfix.2
 
 concurrency:
   group: build-image-${{ github.ref }}
